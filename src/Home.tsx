@@ -11,6 +11,12 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletDialogButton } from "@solana/wallet-adapter-material-ui";
 
+//Custom Imports
+
+//Front-end (MUI)
+import { Typography } from '@mui/material'
+import { Grid } from '@mui/material'
+
 import {
   CandyMachine,
   awaitTransactionSignatureConfirmation,
@@ -25,7 +31,19 @@ const CounterText = styled.span``; // add your styles here
 
 const MintContainer = styled.div``; // add your styles here
 
-const MintButton = styled(Button)``; // add your styles here
+const MintButton = styled(Button)`
+  padding-left: 4em;
+  padding-right: 4em;
+
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5em;
+
+  background-color: white;
+  color: #276ebd;
+
+  border-radius: 25px;
+`; // add your styles here
 
 export interface HomeProps {
   candyMachineId: anchor.web3.PublicKey;
@@ -167,59 +185,76 @@ const Home = (props: HomeProps) => {
 
   return (
     <main>
-      {wallet && (
-        <p>Wallet {shortenAddress(wallet.publicKey.toBase58() || "")}</p>
-      )}
-
-      {wallet && <p>Balance: {(balance || 0).toLocaleString()} SOL</p>}
-
-      {wallet && <p>Total Available: {itemsAvailable}</p>}
-
-      {wallet && <p>Redeemed: {itemsRedeemed}</p>}
-
-      {wallet && <p>Remaining: {itemsRemaining}</p>}
-
-      <MintContainer>
-        {!wallet ? (
-          <ConnectButton>Connect Wallet</ConnectButton>
-        ) : (
-          <MintButton
-            disabled={isSoldOut || isMinting || !isActive}
-            onClick={onMint}
-            variant="contained"
-          >
-            {isSoldOut ? (
-              "SOLD OUT"
-            ) : isActive ? (
-              isMinting ? (
-                <CircularProgress />
-              ) : (
-                "MINT"
-              )
-            ) : (
-              <Countdown
-                date={startDate}
-                onMount={({ completed }) => completed && setIsActive(true)}
-                onComplete={() => setIsActive(true)}
-                renderer={renderCounter}
-              />
-            )}
-          </MintButton>
-        )}
-      </MintContainer>
-
-      <Snackbar
-        open={alertState.open}
-        autoHideDuration={6000}
-        onClose={() => setAlertState({ ...alertState, open: false })}
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        style={{ minHeight: '100vh' }}
       >
-        <Alert
+      
+      <Grid item xs={3} marginBottom={2}>
+        <Typography variant="h5" gutterBottom sx={{marginBottom: 0}}><b>SEASON 1 | ROUND 1</b></Typography>
+        <Typography variant="h1" ><b>Ponzi Pups</b></Typography>
+        <Typography variant="h1" ><b>Pyramid</b></Typography>
+      </Grid>
+      
+      <Grid item xs={3} marginBottom={5}>
+        {wallet && (
+          <Typography variant="h4">Wallet: <b>{shortenAddress(wallet.publicKey.toBase58() || "")}</b></Typography>
+        )}
+
+        {wallet && <Typography variant="h5">Balance: {(balance || 0).toLocaleString()} SOL</Typography>}
+
+        {wallet && <Typography variant="h5">Total Available: {itemsAvailable}</Typography>}
+
+        {wallet && <Typography variant="h5">Redeemed: {itemsRedeemed}</Typography>}
+
+        {wallet && <Typography variant="h5">Remaining: {itemsRemaining}</Typography>}
+      </Grid>
+        <MintContainer>
+          {!wallet ? (
+            <ConnectButton>Connect Wallet</ConnectButton>
+          ) : (
+            <MintButton
+              disabled={isSoldOut || isMinting || !isActive}
+              onClick={onMint}
+              variant="contained"
+            >
+              {isSoldOut ? (
+                "SOLD OUT"
+              ) : isActive ? (
+                isMinting ? (
+                  <CircularProgress />
+                ) : (
+                  "MINT"
+                )
+              ) : (
+                <Countdown
+                  date={startDate}
+                  onMount={({ completed }) => completed && setIsActive(true)}
+                  onComplete={() => setIsActive(true)}
+                  renderer={renderCounter}
+                />
+              )}
+            </MintButton>
+          )}
+        </MintContainer>
+
+        <Snackbar
+          open={alertState.open}
+          autoHideDuration={6000}
           onClose={() => setAlertState({ ...alertState, open: false })}
-          severity={alertState.severity}
         >
-          {alertState.message}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={() => setAlertState({ ...alertState, open: false })}
+            severity={alertState.severity}
+          >
+            {alertState.message}
+          </Alert>
+        </Snackbar>
+      </Grid>
     </main>
   );
 };
